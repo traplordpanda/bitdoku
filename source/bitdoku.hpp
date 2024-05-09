@@ -17,8 +17,14 @@ struct Cell {
     // Initialize from a std::uint16_t
     Cell(bit_field bits) noexcept;
 
+    // convert the data into a decimal char representation
+    [[nodiscard]] auto to_char() const noexcept -> const char;
+
     // Overload the equality operator
     friend bool operator==(const Cell &lhs, const Cell &rhs);
+
+    // Overload the ostream operator to use to_char() for output
+    // friend std::ostream& operator<<(std::ostream& os, const Cell& cell);
 
     // Overload the bitwise OR operator
     Cell operator|(const Cell &other) const;
@@ -34,8 +40,6 @@ struct Cell {
 
     auto is_set() const noexcept -> bool;
 
-    // convert the data into a decimal char representation
-    [[nodiscard]] constexpr char to_char() const noexcept;
 };
 
 class Bitdoku {

@@ -1,9 +1,9 @@
 #include <bit>
 #include <stdexcept>
-
-#include "lib.hpp"
-
+#include <string>
 #include <fmt/core.h>
+
+#include "bitdoku.hpp"
 
 /*
    Bitfield is set up to track sudoku values as well
@@ -13,7 +13,6 @@
    When the value is known the 9th bit is set to cache this information.
    Otherwise the information is regarded as possible values.
 */
-
 constexpr bit_field value_mask = 0b111111111;
 constexpr bit_field set_mask = static_cast<bit_field>((1 << 9));
 
@@ -40,6 +39,14 @@ Cell::Cell(char c) noexcept
 
 Cell::Cell(bit_field bits) noexcept : data(set_or_clear_9bit(bits)) {}
 
+auto Cell::to_char() const noexcept -> const char {
+    if (data == 0 || (data & set_mask) == 0) {
+        return '0';
+    }
+    int bit_position = std::countr_zero(data);
+    return static_cast<char>('0' + bit_position + 1);
+}
+
 bool operator==(const Cell &lhs, const Cell &rhs) {
     return lhs.data == rhs.data;
 }
@@ -65,14 +72,6 @@ Cell &Cell::operator=(const Cell &other) {
 }
 
 auto Cell::is_set() const noexcept -> bool { return data & set_mask; }
-
-constexpr auto Cell::to_char() const noexcept -> char {
-    if (std::popcount(data) != 2) {
-        return '0';
-    }
-    int bit_position = std::countr_zero(data);
-    return '0' + bit_position + 1;
-}
 
 Bitdoku::Bitdoku() noexcept {};
 

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-
+#include <bitset>
 #include <fmt/core.h>
-#include <lib.hpp>
+#include "bitdoku.hpp"
 
 Bitdoku back_track(const std::string& board)
 {
@@ -51,6 +51,8 @@ void debug_board(const Bitdoku& sboard)
 
 int main(int argc, char* argv[])
 {
+  Cell testCell('5');
+  std::cout << "Testing cell output: " << testCell.to_char() << std::endl;
   const std::string board {
       "381624957"
       "694857213"

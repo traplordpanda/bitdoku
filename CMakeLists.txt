@@ -5,7 +5,7 @@ include(cmake/prelude.cmake)
 project(
     bitdoku
     VERSION 0.1.0
-    DESCRIPTION "Soduko Bitboard with brute force solver"
+    DESCRIPTION "Soduko Bitboard with brute force backtracking solver"
     HOMEPAGE_URL "https://example.com/"
     LANGUAGES CXX
 )
@@ -17,7 +17,7 @@ include(cmake/variables.cmake)
 
 add_library(
     bitdoku_lib OBJECT
-    source/lib.cpp
+    source/bitdoku.cpp
 )
 
 target_include_directories(

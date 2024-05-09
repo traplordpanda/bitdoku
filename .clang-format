@@ -1,0 +1,10 @@
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 80
+IndentPPDirectives: AfterHash
+IndentCaseLabels: false
+AlwaysBreakTemplateDeclarations: false
+DerivePointerAlignment: false
+
