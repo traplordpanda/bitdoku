@@ -2,6 +2,21 @@ cmake_minimum_required(VERSION 3.14)
 
 include(cmake/prelude.cmake)
 
+# Bootstrap vcpkg
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg.cmake")
+  message(STATUS "Bootstrapping vcpkg...")
+  if(WIN32)
+    execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/bootstrap-vcpkg.bat" "-disableMetrics" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg" RESULT_VARIABLE VCPKG_BOOTSTRAP_RESULT) 
+  else()
+    execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/bootstrap-vcpkg.sh" "-disableMetrics" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg" RESULT_VARIABLE VCPKG_BOOTSTRAP_RESULT)
+  if(NOT VCPKG_BOOTSTRAP_RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to bootstrap vcpkg: ${VCPKG_BOOTSTRAP_RESULT}")
+  endif()
+endif()
+
+# Set the vcpkg toolchain file
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+
 project(
     bitdoku
     VERSION 0.1.0

@@ -18,7 +18,7 @@
       "name": "vcpkg",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "${CMAKE_CURRENT_SOURCE_DIR}/scripts/buildsystems/vcpkg.cmake"
       }
     },
     {
@@ -81,7 +81,7 @@
     {
       "name": "ci-linux",
       "inherits": ["flags-gcc-clang", "ci-std"],
-      "generator": "Unix Makefiles",
+      "generator": "Ninja",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
