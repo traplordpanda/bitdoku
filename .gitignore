@@ -1,3 +1,12 @@
 /build
 /vcpkg
+**/.DS_Store
+.idea/
+.vs/
+.vscode/
+build/
+cmake-build-*/
+prefix/
+.clangd
+compile_commands.json
 

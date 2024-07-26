@@ -73,6 +73,7 @@ class Bitdoku {
     auto is_valid_move(const int board_index, const bit_field num_bit) const
         -> bool;
     auto solve() -> bool;
+    auto single_solve() -> bool;
     auto to_string() const noexcept -> std::string;
     auto get_cell(const int index) const -> bit_field;
     auto print_board() const -> void;

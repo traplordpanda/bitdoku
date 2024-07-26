@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <bitset>
 #include <fmt/core.h>
 #include "bitdoku.hpp"
 

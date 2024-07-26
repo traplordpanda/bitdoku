@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <string>
 #include <fmt/core.h>
+#include <stack>
+#include <vector>
 
 #include "bitdoku.hpp"
 
@@ -31,6 +33,14 @@ constexpr auto set_or_clear_9bit(const bit_field value) noexcept -> bit_field {
     }
     return clear_9bit(value);
 }
+
+struct State {
+    int cellIndex;
+    int candidateNumber;
+    bool isBacktracking;
+
+    State(int idx, int num, bool backtrack) : cellIndex(idx), candidateNumber(num), isBacktracking(backtrack) {}
+};
 
 Cell::Cell() noexcept : data(0) {}
 
@@ -183,6 +193,11 @@ auto Bitdoku::solve() -> bool {
     }
 
     return false; // No valid solution found
+}
+
+// single step function as opposed to recursive backracking
+auto Bitdoku::single_solve() -> bool {
+
 }
 
 auto Bitdoku::print_board_bits() const -> void {

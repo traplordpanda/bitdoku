@@ -35,30 +35,43 @@ add_library(
     bitdoku_lib OBJECT
     source/bitdoku.cpp
 )
-
 target_include_directories(
     bitdoku_lib ${warning_guard}
     PUBLIC
-    "\$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
 )
-
-target_compile_features(bitdoku_lib PUBLIC cxx_std_20)
-
+target_compile_features(bitdoku_lib PRIVATE cxx_std_20)
 find_package(fmt REQUIRED)
 target_link_libraries(bitdoku_lib PRIVATE fmt::fmt)
 
-# ---- Declare executable ----
 
-find_package(fmt CONFIG REQUIRED)
+add_library(
+    bitdoku_gui OBJECT
+    source/bitdoku_gui.cpp
+)
+target_include_directories(
+    bitdoku_gui ${warning_guard}
+    PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
+)
+target_compile_features(bitdoku_gui PRIVATE cxx_std_20)
+find_package(SFML COMPONENTS graphics window system REQUIRED)
+target_link_libraries(bitdoku_gui PUBLIC sfml-graphics sfml-window sfml-system bitdoku_lib) 
 
+# ---- Declare executables ----
+
+# Console executable
 add_executable(bitdoku_exe source/main.cpp)
 add_executable(bitdoku::exe ALIAS bitdoku_exe)
-
 set_property(TARGET bitdoku_exe PROPERTY OUTPUT_NAME bitdoku)
-
 target_compile_features(bitdoku_exe PRIVATE cxx_std_20)
-
 target_link_libraries(bitdoku_exe PRIVATE bitdoku_lib fmt::fmt)
+
+# GUI executable
+add_executable(bgui source/gui_exe.cpp)
+set_property(TARGET bgui PROPERTY OUTPUT_NAME gui)
+target_compile_features(bgui PRIVATE cxx_std_20)
+target_link_libraries(bgui PRIVATE bitdoku_gui bitdoku_lib)
 
 # ---- Install rules ----
 
