@@ -2,6 +2,10 @@
 #include <string>
 #include <fmt/core.h>
 #include "bitdoku.hpp"
+#include <chrono>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 Bitdoku back_track(const std::string& board)
 {
@@ -12,6 +16,18 @@ Bitdoku back_track(const std::string& board)
   for (int i = 0; i < flat_board_size; i++) {
     sboard.set_possible(i);
   }
+  auto state = sboard.single_solve();
+  while (state()) {
+  }
+  while (!(sboard.single_solve())) {
+	fmt::print("---------------------\n\n");
+	fmt::print("{}\n", sboard.to_string());
+	sboard.print_board();
+	std::this_thread::sleep_for(123ms);
+  }
+
+
+  std::this_thread::sleep_for(123ms);
   auto solved = sboard.solve();
   if (not(solved)) {
     fmt::print("\nsolving error\n");

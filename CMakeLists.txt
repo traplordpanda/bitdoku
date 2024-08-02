@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.28)
 
 include(cmake/prelude.cmake)
 
@@ -40,9 +40,10 @@ target_include_directories(
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
 )
-target_compile_features(bitdoku_lib PRIVATE cxx_std_20)
+target_compile_features(bitdoku_lib PRIVATE cxx_std_23)
 find_package(fmt REQUIRED)
-target_link_libraries(bitdoku_lib PRIVATE fmt::fmt)
+find_package(cppcoro REQUIRED)
+target_link_libraries(bitdoku_lib PRIVATE fmt::fmt cppcoro)
 
 
 add_library(
@@ -54,7 +55,7 @@ target_include_directories(
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
 )
-target_compile_features(bitdoku_gui PRIVATE cxx_std_20)
+target_compile_features(bitdoku_gui PRIVATE cxx_std_23)
 find_package(SFML COMPONENTS graphics window system REQUIRED)
 target_link_libraries(bitdoku_gui PUBLIC sfml-graphics sfml-window sfml-system bitdoku_lib) 
 
@@ -64,13 +65,13 @@ target_link_libraries(bitdoku_gui PUBLIC sfml-graphics sfml-window sfml-system b
 add_executable(bitdoku_exe source/main.cpp)
 add_executable(bitdoku::exe ALIAS bitdoku_exe)
 set_property(TARGET bitdoku_exe PROPERTY OUTPUT_NAME bitdoku)
-target_compile_features(bitdoku_exe PRIVATE cxx_std_20)
+target_compile_features(bitdoku_exe PRIVATE cxx_std_23)
 target_link_libraries(bitdoku_exe PRIVATE bitdoku_lib fmt::fmt)
 
 # GUI executable
 add_executable(bgui source/gui_exe.cpp)
 set_property(TARGET bgui PROPERTY OUTPUT_NAME gui)
-target_compile_features(bgui PRIVATE cxx_std_20)
+target_compile_features(bgui PRIVATE cxx_std_23)
 target_link_libraries(bgui PRIVATE bitdoku_gui bitdoku_lib)
 
 # ---- Install rules ----

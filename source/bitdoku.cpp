@@ -3,8 +3,6 @@
 #include <string>
 #include <fmt/core.h>
 #include <stack>
-#include <vector>
-
 #include "bitdoku.hpp"
 
 /*
@@ -33,14 +31,6 @@ constexpr auto set_or_clear_9bit(const bit_field value) noexcept -> bit_field {
     }
     return clear_9bit(value);
 }
-
-struct State {
-    int cellIndex;
-    int candidateNumber;
-    bool isBacktracking;
-
-    State(int idx, int num, bool backtrack) : cellIndex(idx), candidateNumber(num), isBacktracking(backtrack) {}
-};
 
 Cell::Cell() noexcept : data(0) {}
 
@@ -98,7 +88,7 @@ Bitdoku::Bitdoku(const std::string &board) {
     }
 }
 
-const std::array<Cell, flat_board_size> Bitdoku::get_board() const {
+auto Bitdoku::get_board() const -> const std::array<Cell, flat_board_size> {
     return bitboards;
 }
 
@@ -194,11 +184,56 @@ auto Bitdoku::solve() -> bool {
 
     return false; // No valid solution found
 }
+auto Bitdoku::step_solve() -> cppcoro::recursive_generator<bool> {
+    int empty_cell = find_empty_cell();
+    if (empty_cell == -1) {
+        co_yield true;  // All cells are filled, puzzle is solved
+        co_return;
+    }
 
-// single step function as opposed to recursive backracking
-auto Bitdoku::single_solve() -> bool {
-
+    for (int num = 1; num <= 9; ++num) {
+        bit_field num_bit = 1 << (num - 1);
+        if (is_valid_move(empty_cell, num_bit)) {
+            set(empty_cell, num_bit);
+            if (set_possible(empty_cell)) {
+                auto sub_solve = step_solve();
+                bool sub_result = false;
+                for (bool solved : sub_solve) {
+                    sub_result = solved;
+                    co_yield solved;  // Propagate intermediate results
+                    if (solved) break;
+                }
+                if (sub_result) {
+                    co_return;  // Solution found, no need to backtrack
+                }
+            }
+            // Backtrack
+            set(empty_cell, 0);
+        }
+    }
+    co_yield false;  // No valid solution found for this cell
 }
+// single step function using coroutine generator and co_await
+// as opposed to recursive backracking
+// auto Bitdoku::step_solve() -> cppcoro::recursive_generator<bool> {
+// 	int empty_cell = find_empty_cell();
+  //   if (empty_cell == -1) {
+    //     co_yield true; // All cells are filled, puzzle is solved
+    // }
+// 
+  //   for (int num = 1; num <= 9; ++num) {
+    //     bit_field num_bit = 1 << (num - 1);
+      //   if (is_valid_move(empty_cell, num_bit)) {
+        //     set(empty_cell, num_bit);
+          //   if (set_possible(empty_cell)) {
+            //     co_yield step_solve();
+            // }
+            ////  Backtrack
+            // set(empty_cell, 0);
+        // }
+    // }
+    // co_yield false; // No valid solution found
+// }
 
 auto Bitdoku::print_board_bits() const -> void {
     for (std::size_t i = 0; i < flat_board_size; i++) {

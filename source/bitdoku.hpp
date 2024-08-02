@@ -3,9 +3,11 @@
 #include <array>
 #include <string>
 #include <utility>
+#include <cppcoro/generator.hpp>
+#include <cppcoro/recursive_generator.hpp>
 
 using bit_field = std::uint16_t;
-constexpr int flat_board_size = 81;
+static constexpr int flat_board_size = 81;
 
 struct Cell {
     mutable bit_field data;
@@ -42,13 +44,15 @@ struct Cell {
 
 };
 
+using Bitboard = std::array<Cell, flat_board_size>;
+
 class Bitdoku {
   public:
     Bitdoku() noexcept;
 
     // Constructor from a string representing the board
     Bitdoku(const std::string &board);
-    const std::array<Cell, flat_board_size> get_board() const;
+    auto get_board() const -> const std::array<Cell, flat_board_size>;
 
     auto set(int row, int col, int num) noexcept -> void;
     auto set(int index, bit_field value) noexcept -> void;
@@ -73,14 +77,15 @@ class Bitdoku {
     auto is_valid_move(const int board_index, const bit_field num_bit) const
         -> bool;
     auto solve() -> bool;
-    auto single_solve() -> bool;
+    auto step_solve() -> cppcoro::recursive_generator<bool>;
+	
     auto to_string() const noexcept -> std::string;
     auto get_cell(const int index) const -> bit_field;
     auto print_board() const -> void;
     auto print_board_bits() const -> void;
 
   private:
-    mutable std::array<Cell, flat_board_size> bitboards{};
+    mutable Bitboard bitboards{};
     static constexpr bit_field expected_mask =
         0b0111111111; // Mask for bits 1-9 set
 

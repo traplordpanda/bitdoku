@@ -3,8 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <chrono>
-#include <filesystem>
-#include <string_view>
 
 using namespace std::string_view_literals;
 namespace fs = std::filesystem;
@@ -25,10 +23,16 @@ SudokuVisualizer::SudokuVisualizer(int windowSize, Bitdoku& solver)
 
 void SudokuVisualizer::run() {
     while (window.isOpen()) {
-		handleEvents();
+        for (auto&& state : solver.step_solve()) {
+            handleEvents();
+            draw();
+            //std::this_thread::sleep_for(std::chrono::microseconds(100));
+            if (state == true) { break; };
+            if (!window.isOpen()) { break; };
+        }
+
+        handleEvents();
         draw();
-        solver.single_solve();
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 }
 
