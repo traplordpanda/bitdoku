@@ -1,9 +1,9 @@
+#include "bitdoku.hpp"
 #include <bit>
-#include <stdexcept>
-#include <string>
 #include <fmt/core.h>
 #include <stack>
-#include "bitdoku.hpp"
+#include <stdexcept>
+#include <string>
 
 /*
    Bitfield is set up to track sudoku values as well
@@ -187,7 +187,7 @@ auto Bitdoku::solve() -> bool {
 auto Bitdoku::step_solve() -> cppcoro::recursive_generator<bool> {
     int empty_cell = find_empty_cell();
     if (empty_cell == -1) {
-        co_yield true;  // All cells are filled, puzzle is solved
+        co_yield true; // All cells are filled, puzzle is solved
         co_return;
     }
 
@@ -200,40 +200,20 @@ auto Bitdoku::step_solve() -> cppcoro::recursive_generator<bool> {
                 bool sub_result = false;
                 for (bool solved : sub_solve) {
                     sub_result = solved;
-                    co_yield solved;  // Propagate intermediate results
-                    if (solved) break;
+                    co_yield solved; // Propagate intermediate results
+                    if (solved)
+                        break;
                 }
                 if (sub_result) {
-                    co_return;  // Solution found, no need to backtrack
+                    co_return; // Solution found, no need to backtrack
                 }
             }
             // Backtrack
             set(empty_cell, 0);
         }
     }
-    co_yield false;  // No valid solution found for this cell
+    co_yield false; // No valid solution found for this cell
 }
-// single step function using coroutine generator and co_await
-// as opposed to recursive backracking
-// auto Bitdoku::step_solve() -> cppcoro::recursive_generator<bool> {
-// 	int empty_cell = find_empty_cell();
-  //   if (empty_cell == -1) {
-    //     co_yield true; // All cells are filled, puzzle is solved
-    // }
-// 
-  //   for (int num = 1; num <= 9; ++num) {
-    //     bit_field num_bit = 1 << (num - 1);
-      //   if (is_valid_move(empty_cell, num_bit)) {
-        //     set(empty_cell, num_bit);
-          //   if (set_possible(empty_cell)) {
-            //     co_yield step_solve();
-            // }
-            ////  Backtrack
-            // set(empty_cell, 0);
-        // }
-    // }
-    // co_yield false; // No valid solution found
-// }
 
 auto Bitdoku::print_board_bits() const -> void {
     for (std::size_t i = 0; i < flat_board_size; i++) {

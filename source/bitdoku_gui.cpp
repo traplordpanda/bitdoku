@@ -1,22 +1,28 @@
 #include "bitdoku_gui.hpp"
 #include "bitdoku.hpp"
+#include <filesystem>
 #include <SFML/Graphics.hpp>
-#include <thread>
-#include <chrono>
+#include <stdexcept>
+#include <iostream>
 
-using namespace std::string_view_literals;
 namespace fs = std::filesystem;
-static constexpr auto f_path = "C:\\Users\\622807\\source\\repos\\bitdoku\\resources\\open-sans\\OpenSans-Light.ttf"sv;
+const auto font_path = fs::current_path().parent_path() / "OpenSans-Regular.ttf";
+
+
 
 SudokuVisualizer::SudokuVisualizer(int windowSize, Bitdoku& solver)
     : window(sf::VideoMode(windowSize, windowSize), "Sudoku Solver"),
     solver(solver),
     cellSize(windowSize / BOARD_SIZE),
     isSolving(true),
-    font()
-{
+    font() {
     window.setFramerateLimit(60);
-    if (!font.loadFromFile(std::string(f_path))) {
+ if (not(fs::exists(font_path))) {
+    // throw runtime exception
+    std::runtime_error("Font file not found" + font_path.string());
+}  
+    std::cout << "Font path: " << font_path.string() << std::endl;
+    if ( not(font.loadFromFile(font_path.string())) ) {
         std::abort();
     }
 }
@@ -26,7 +32,6 @@ void SudokuVisualizer::run() {
         for (auto&& state : solver.step_solve()) {
             handleEvents();
             draw();
-            //std::this_thread::sleep_for(std::chrono::microseconds(100));
             if (state == true) { break; };
             if (!window.isOpen()) { break; };
         }

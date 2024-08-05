@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 include(cmake/prelude.cmake)
 
 # Bootstrap vcpkg
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg.cmake")
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
   message(STATUS "Bootstrapping vcpkg...")
   if(WIN32)
     execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/bootstrap-vcpkg.bat" "-disableMetrics" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg" RESULT_VARIABLE VCPKG_BOOTSTRAP_RESULT) 
@@ -17,6 +17,10 @@ endif()
 
 # Set the vcpkg toolchain file
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+
+# Set font path
+set(USER_FONT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/open-sans/OpenSans-Regular.ttf)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/source/bitdoku_gui.cpp @ONLY)
 
 project(
     bitdoku
@@ -74,6 +78,14 @@ set_property(TARGET bgui PROPERTY OUTPUT_NAME gui)
 target_compile_features(bgui PRIVATE cxx_std_23)
 target_link_libraries(bgui PRIVATE bitdoku_gui bitdoku_lib)
 
+add_custom_command(
+        TARGET bgui PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_CURRENT_LIST_DIR}/resources/open-sans/OpenSans-Regular.ttf
+                ${CMAKE_BINARY_DIR}/OpenSans-Regular.ttf)
+
+# output binary dir for debugging
+message(STATUS "Copying font from ${CMAKE_CURRENT_LIST_DIR}/resources/open-sans/OpenSans-Regular.ttf to ${CMAKE_BINARY_DIR}/OpenSans-Regular.ttf")
 # ---- Install rules ----
 
 if(NOT CMAKE_SKIP_INSTALL_RULES)
