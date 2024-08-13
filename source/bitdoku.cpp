@@ -1,9 +1,10 @@
-#include "bitdoku.hpp"
 #include <bit>
+#include <cppcoro/recursive_generator.hpp>
 #include <fmt/core.h>
-#include <stack>
 #include <stdexcept>
 #include <string>
+
+module bitdoku;
 
 /*
    Bitfield is set up to track sudoku values as well
@@ -12,6 +13,8 @@
    If a single bit 0-8 is set then the value is known.
    When the value is known the 9th bit is set to cache this information.
    Otherwise the information is regarded as possible values.
+   for example  0b0010 0001 0000 is a 5 that is set
+                                0b0000 0001 0000 is a 5 that is not set
 */
 constexpr bit_field value_mask = 0b111111111;
 constexpr bit_field set_mask = static_cast<bit_field>((1 << 9));

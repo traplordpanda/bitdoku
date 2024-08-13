@@ -1,7 +1,9 @@
+import bitdoku;
+
 #include <bitdoku_gui.hpp>
-#include "bitdoku.hpp"
 int main() {
-    auto solver = Bitdoku("000000005020150030004007000010000920000000800508710000309000006000006008007209000");
+    auto solver = Bitdoku("0000000050201500300040070000100009200000008005087100"
+                          "00309000006000006008007209000");
     SudokuVisualizer visualizer(540, solver);
     visualizer.run();
     return 0;

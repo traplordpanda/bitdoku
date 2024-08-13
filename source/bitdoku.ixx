@@ -1,16 +1,18 @@
-#pragma once
+module;
 
 #include <array>
+#include <cppcoro/recursive_generator.hpp>
+#include <iostream>
 #include <string>
 #include <utility>
-#include <cppcoro/generator.hpp>
-#include <cppcoro/recursive_generator.hpp>
 
-using bit_field = std::uint16_t;
-static constexpr int flat_board_size = 81;
+export module bitdoku;
 
-struct Cell {
-    mutable bit_field data;
+export using bit_field = std::uint16_t;
+export constexpr int flat_board_size = 81;
+
+export struct Cell {
+    bit_field data;
     Cell() noexcept;
 
     // Initialize from a char with bitwise ops to set proper field
@@ -42,11 +44,15 @@ struct Cell {
 
     auto is_set() const noexcept -> bool;
 
+    friend std::ostream &operator<<(std::ostream &os, const Cell &obj) {
+        os << obj.to_char();
+        return os;
+    }
 };
 
 using Bitboard = std::array<Cell, flat_board_size>;
 
-class Bitdoku {
+export class Bitdoku {
   public:
     Bitdoku() noexcept;
 
@@ -78,7 +84,7 @@ class Bitdoku {
         -> bool;
     auto solve() -> bool;
     auto step_solve() -> cppcoro::recursive_generator<bool>;
-	
+
     auto to_string() const noexcept -> std::string;
     auto get_cell(const int index) const -> bit_field;
     auto print_board() const -> void;
