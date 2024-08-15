@@ -1,8 +1,11 @@
 #include <bit>
 #include <cppcoro/recursive_generator.hpp>
 #include <fmt/core.h>
+#include <future>
 #include <stdexcept>
 #include <string>
+#include <thread>
+#include <vector>
 
 module bitdoku;
 
@@ -217,6 +220,47 @@ auto Bitdoku::step_solve() -> cppcoro::recursive_generator<bool> {
     }
     co_yield false; // No valid solution found for this cell
 }
+
+auto Bitdoku::solve_parallel(int num_threads) -> bool {
+    int empty_cell = find_empty_cell();
+    if (empty_cell == -1) {
+        return true; // All cells are filled, puzzle is solved
+    }
+
+    std::vector<std::future<std::optional<Bitdoku>>> futures;
+    futures.reserve(9);
+
+    for (int num = 1; num <= 9; ++num) {
+        bit_field num_bit = 1 << (num - 1);
+        if (is_valid_move(empty_cell, num_bit)) {
+            futures.push_back(std::async(std::launch::async, [this, empty_cell, num_bit]() {
+                Bitdoku board_copy = *this; // Thread-safe copy constructor call
+                board_copy.set(empty_cell, num_bit);
+                if (board_copy.set_possible(empty_cell)) {
+                    if (board_copy.solve()) {
+                        return std::optional<Bitdoku>{board_copy};
+                    }
+                }
+                return std::optional<Bitdoku>{};
+                }));
+
+            if (futures.size() >= num_threads) {
+                break;
+            }
+        }
+    }
+
+    for (auto& future : futures) {
+        auto result = future.get();
+        if (result) {
+            *this = *result; // Update this board with the solution
+            return true;
+        }
+    }
+
+    return false;
+}
+
 
 auto Bitdoku::print_board_bits() const -> void {
     for (std::size_t i = 0; i < flat_board_size; i++) {

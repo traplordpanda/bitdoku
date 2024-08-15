@@ -2,6 +2,7 @@ import bitdoku;
 
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_all.hpp>
 
 TEST_CASE("Solver", "[library]") {
     auto board = Bitdoku{"06001000407005000094000000600040000200080001000107260"
@@ -78,6 +79,17 @@ TEST_CASE("StepSolver", "[library]") {
                                  "831972645317528469695143287284796531");
 }
 
+TEST_CASE("ParelleSolver", "[library]") {
+    auto board = Bitdoku{"06001000407005000094000000600040000200080001000107260"
+                         "0000020000690000080"
+                         "080700030"};
+    REQUIRE(board.to_string() == "060010004070050000940000006000400002000800010"
+                                 "001072600000020000690000080080700030");
+    auto solved = board.solve_parallel();
+    REQUIRE(solved == true);
+    REQUIRE(board.to_string() == "568219374173654928942387156756431892429865713"
+                                 "831972645317528469695143287284796531");
+}
 TEST_CASE("BENCHMARKING", "[!benchmark]") {
     BENCHMARK("recursive_solve") {
         auto board = Bitdoku{ "060010004070050000940000006000400002000800010001072600000020000690000080080700030" };
@@ -85,7 +97,7 @@ TEST_CASE("BENCHMARKING", "[!benchmark]") {
         return board.to_string();
     };
 
-    BENCHMARK("Step solver") {
+    BENCHMARK("coroutine_solve") {
         auto board = Bitdoku{ "060010004070050000940000006000400002000800010001072600000020000690000080080700030" };
         for (auto&& it : board.step_solve()) {
             if (it) {
@@ -94,5 +106,20 @@ TEST_CASE("BENCHMARKING", "[!benchmark]") {
         }
         return board.to_string();
     };
+
+    BENCHMARK("parallel_solve") {
+		auto board = Bitdoku{ "060010004070050000940000006000400002000800010001072600000020000690000080080700030" };
+		board.solve_parallel();
+		return board.to_string();
+	};
+	BENCHMARK("parallel_solve_8") {
+		auto board = Bitdoku{ "060010004070050000940000006000400002000800010001072600000020000690000080080700030" };
+		board.solve_parallel(8);
+		return board.to_string();
+	};
 }
+
+CATCH_REGISTER_REPORTER("console", Catch::ConsoleReporter)
+
+
 

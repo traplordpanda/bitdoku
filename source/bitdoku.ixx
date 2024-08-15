@@ -5,6 +5,7 @@ module;
 #include <iostream>
 #include <string>
 #include <utility>
+#include <thread>
 
 export module bitdoku;
 
@@ -84,6 +85,7 @@ export class Bitdoku {
         -> bool;
     auto solve() -> bool;
     auto step_solve() -> cppcoro::recursive_generator<bool>;
+    auto solve_parallel(int num_threads = std::thread::hardware_concurrency()) -> bool;
 
     auto to_string() const noexcept -> std::string;
     auto get_cell(const int index) const -> bit_field;
