@@ -121,5 +121,3 @@ TEST_CASE("BENCHMARKING", "[!benchmark]") {
 
 CATCH_REGISTER_REPORTER("console", Catch::ConsoleReporter)
 
-
-
