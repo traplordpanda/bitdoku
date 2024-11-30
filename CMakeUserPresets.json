@@ -29,24 +29,33 @@
       "inherits": ["dev-common", "ci-darwin"]
     },
     {
-      "name": "dev-win64",
-      "binaryDir": "${sourceDir}/build/dev-win64",
-      "inherits": ["dev-common", "ci-win64", "vcpkg-win64-static"],
-      "environment": {
-        "UseMultiToolTask": "true",
-        "EnforceProcessCountAcrossBuilds": "true"
-      }
+        "name": "dev-win64",
+        "binaryDir": "${sourceDir}/build/dev-win64",
+        "inherits": [ "dev-common", "ci-win64", "vcpkg-win64-static" ],
+        "environment": {
+            "UseMultiToolTask": "true",
+            "EnforceProcessCountAcrossBuilds": "true"
+        }
     },
     {
-      "name": "dev",
-      "binaryDir": "${sourceDir}/build/dev",
-      "inherits": "dev-linux"
+        "name": "dev-win64-clang",
+        "binaryDir": "${sourceDir}/build/dev-win64-clang",
+        "inherits": [ "dev-common", "ci-win64-clang", "vcpkg-win64-static" ],
+        "environment": {
+            "UseMultiToolTask": "true",
+            "EnforceProcessCountAcrossBuilds": "true"
+        }
     },
-    {
-      "name": "dev-coverage",
-      "binaryDir": "${sourceDir}/build/coverage",
-      "inherits": ["dev-mode", "coverage-linux", "vcpkg"]
-    }
+        {
+            "name": "dev",
+            "binaryDir": "${sourceDir}/build/dev",
+            "inherits": "dev-linux"
+        },
+        {
+            "name": "dev-coverage",
+            "binaryDir": "${sourceDir}/build/coverage",
+            "inherits": [ "dev-mode", "coverage-linux", "vcpkg" ]
+        }
   ],
   "buildPresets": [
     {
