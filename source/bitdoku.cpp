@@ -1,12 +1,13 @@
+
 #include <bit>
 #include <cppcoro/recursive_generator.hpp>
-#include <fmt/core.h>
 #include <future>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
 
+import fmt;
 module bitdoku;
 
 /*
@@ -82,10 +83,6 @@ auto Cell::is_set() const noexcept -> bool { return data & set_mask; }
 Bitdoku::Bitdoku() noexcept {};
 
 Bitdoku::Bitdoku(const std::string &board) {
-    if (board.size() != flat_board_size) {
-        throw std::runtime_error(
-            "Invalid board size. Must be exactly 81 characters.");
-    }
     for (int i = 0; i < flat_board_size; ++i) {
         if (board[i] >= '1' &&
             board[i] <= '9') { // '0' represents an empty cell

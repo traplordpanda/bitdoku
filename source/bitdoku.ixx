@@ -1,14 +1,16 @@
 module;
 
+
 #include <array>
-#include <cppcoro/recursive_generator.hpp>
 #include <iostream>
 #include <string>
 #include <utility>
 #include <thread>
+#include <cppcoro/recursive_generator.hpp>
 
 export module bitdoku;
 
+import fmt;
 export using bit_field = std::uint16_t;
 export constexpr int flat_board_size = 81;
 
@@ -52,6 +54,13 @@ export struct Cell {
 };
 
 using Bitboard = std::array<Cell, flat_board_size>;
+
+export template<class T>
+concept StringLike81 = requires(T str) {
+    { str.size() } -> std::same_as<std::size_t>;
+    { str[0] } -> std::same_as<char>;
+    { str[80] } -> std::same_as<char>;
+};
 
 export class Bitdoku {
   public:

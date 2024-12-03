@@ -2,21 +2,25 @@ cmake_minimum_required(VERSION 3.28)
 
 include(cmake/prelude.cmake)
 
+# Add an option to disable vcpkg integration
+option(USE_VCPKG_SUBMODULE "Use vcpkg submodule for dependency management" ON)
+if(USE_VCPKG_SUBMODULE)
 # Bootstrap vcpkg
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
-  message(STATUS "Bootstrapping vcpkg...")
-  if(WIN32)
-    execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/bootstrap-vcpkg.bat" "-disableMetrics" "-useSystemBinaries" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg" RESULT_VARIABLE VCPKG_BOOTSTRAP_RESULT) 
-  else()
-    execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/bootstrap-vcpkg.sh" "-disableMetrics" "-useSystemBinaries" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg" RESULT_VARIABLE VCPKG_BOOTSTRAP_RESULT)
-  endif() 
-  if(NOT VCPKG_BOOTSTRAP_RESULT EQUAL 0)
-    message(FATAL_ERROR "Failed to bootstrap vcpkg: ${VCPKG_BOOTSTRAP_RESULT}")
-  endif()
-endif()
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
+      message(STATUS "Bootstrapping vcpkg...")
+      if(WIN32)
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/bootstrap-vcpkg.bat" "-disableMetrics" "-useSystemBinaries" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg" RESULT_VARIABLE VCPKG_BOOTSTRAP_RESULT) 
+      else()
+        execute_process(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/bootstrap-vcpkg.sh" "-disableMetrics" "-useSystemBinaries" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg" RESULT_VARIABLE VCPKG_BOOTSTRAP_RESULT)
+      endif() 
+      if(NOT VCPKG_BOOTSTRAP_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to bootstrap vcpkg: ${VCPKG_BOOTSTRAP_RESULT}")
+      endif()
+    endif()
 
-# Set the vcpkg toolchain file
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+    # Set the vcpkg toolchain file
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+endif()
 
 # Set font path
 set(USER_FONT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/open-sans/OpenSans-Regular.ttf)
@@ -32,6 +36,9 @@ project(
 
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
+
+# ---- Add modules ----
+add_subdirectory(source/modules)
 
 # ---- Declare library ----
 
@@ -55,8 +62,7 @@ target_include_directories(
 target_compile_features(bitdoku_lib PRIVATE cxx_std_23)
 find_package(fmt REQUIRED)
 find_package(cppcoro REQUIRED)
-target_link_libraries(bitdoku_lib PRIVATE fmt::fmt cppcoro)
-
+target_link_libraries(bitdoku_lib PRIVATE module_fmt cppcoro)
 
 add_library(
     bitdoku_gui OBJECT
