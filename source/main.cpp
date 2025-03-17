@@ -1,5 +1,5 @@
 import bitdoku;
-
+//import fmt;
 #include <fmt/core.h>
 #include <iostream>
 #include <string>
@@ -82,6 +82,7 @@ int main(int argc, char *argv[]) {
         "0000000500006307100020003061000006000004000299087005000009070000150080"
         "00000000067"};
 
+
     if (argc != 2) { // Expect exactly one additional argument: the board string
         std::cerr << "Usage: " << argv[0] << " <sudoku_board_string>\n";
         return 1; // Return with error code
@@ -97,9 +98,20 @@ int main(int argc, char *argv[]) {
     }
 
     // Initialize the Sudoku board with the provided input
-    auto solvedBoard = back_track(board_in);
-    debug_board(
-        solvedBoard); // Display the solved board and other debug information
+    //auto solvedBoard = back_track(board_in);
+    //debug_board(
+    //    solvedBoard); // Display the solved board and other debug information
+    auto bb = Bitdoku(board_in);
+    bb.print_board();
+    auto possible = bb.get_possible(0);
+    // convert the bit field into an array of possible values
+    for (int i = 0; i < 9; i++) {
+        auto temp = (possible >> i) & 1;
+        if (temp) {
+            fmt::print("{} ", i + 1);
+        }
+    }
+    fmt::print("\n");
 
     return 0; // Successful execution
 }

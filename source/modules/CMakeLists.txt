@@ -1,6 +1,7 @@
 # sources/modules/CMakeLists.txt
 add_library(module_fmt)
 add_library(module_std)
+add_library(module_gui)
 
 # Configure fmt module
 target_sources(
@@ -40,3 +41,26 @@ target_include_directories(
 		"$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source/modules/stl>"
 		"$<INSTALL_INTERFACE:include>"
 )
+
+# configure imgui module
+target_sources(
+   module_gui
+   PUBLIC
+       FILE_SET CXX_MODULES FILES
+       gui/gui.ixx
+    PRIVATE
+       FILE_SET HEADERS FILES
+       gui/gui.hpp
+)
+target_include_directories(
+   module_gui ${warning_guard}
+   PUBLIC
+       "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source/modules/gui>"
+       "$<INSTALL_INTERFACE:include>"
+)
+find_package(imgui REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
+target_link_libraries(module_gui PUBLIC imgui::imgui OpenGL::GL glfw)
+
+

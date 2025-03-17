@@ -8,13 +8,22 @@
       "name": "fmt",
       "version>=": "10.2.1#1"
     },
+    "glfw3",
+    {
+      "name": "imgui",
+      "features": [
+        "glfw-binding",
+        "opengl3-binding"
+      ]
+    },
+    {
+      "name": "nanobind",
+      "version>=": "2.2.0"
+    },
+    "opengl",
     {
       "name": "sfml",
       "version>=": "2.5.1#14"
-    },
-    {
-        "name": "nanobind",
-        "version>=": "2.2.0"
     }
   ],
   "features": {

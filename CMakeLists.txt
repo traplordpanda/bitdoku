@@ -92,6 +92,15 @@ set_property(TARGET bgui PROPERTY OUTPUT_NAME gui)
 target_compile_features(bgui PRIVATE cxx_std_23)
 target_link_libraries(bgui PRIVATE bitdoku_gui bitdoku_lib)
 
+# imgui executable
+add_executable(imgui_exe source/igui.cpp)
+set_property(TARGET imgui_exe PROPERTY OUTPUT_NAME igui)
+target_compile_features(imgui_exe PRIVATE cxx_std_23)
+find_package(imgui REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(OpenGL REQUIRED)
+target_link_libraries(imgui_exe PRIVATE bitdoku_lib  imgui::imgui OpenGL::GL glfw module_std)
+
 add_custom_command(
         TARGET bgui PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy

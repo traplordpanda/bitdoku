@@ -88,7 +88,8 @@ export class Bitdoku {
     // Column value ~0b111110111 |
     // Block value  ~0b111111111 |
     // Poss values   0b001001000
-    auto set_possible(const std::size_t board_index) -> bool;
+    auto set_possible(const int board_index) -> bool;
+    auto get_possible(const int board_index) -> bit_field;
     auto find_empty_cell() const -> int;
     auto is_valid_move(const int board_index, const bit_field num_bit) const
         -> bool;
