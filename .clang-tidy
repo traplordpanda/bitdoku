@@ -11,7 +11,12 @@ Checks: "*,\
   -llvm-include-order,\
   -llvmlibc-*,\
   -modernize-use-nodiscard,\
-  -misc-non-private-member-variables-in-classes"
+  -misc-non-private-member-variables-in-classes,\
+  -cppcoreguidelines-pro-bounds-constant-array-index,\
+  -clang-diagnostic-sign-conversion,\
+  -cppcoreguidelines-avoid-magic-numbers,\
+  -readability-magic-number"
+
 WarningsAsErrors: ''
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'
@@ -153,3 +158,14 @@ CheckOptions:
   - key: 'readability-identifier-naming.VirtualMethodCase'
     value: 'lower_case'
 ...
+
+---
+# Disable checks for C++20 module files
+Checks: '-*'
+HeaderFilterRegex: ''
+WarningsAsErrors: ''
+FormatStyle: none
+InheritParentConfig: false
+
+# Apply to module files only
+FileFilter: '.*\.ixx$'

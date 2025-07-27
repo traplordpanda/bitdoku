@@ -1,29 +1,15 @@
 {
   "name": "bitdoku",
   "version-semver": "0.1.0",
-  "builtin-baseline": "cd124b84feb0c02a24a2d90981e8358fdee0e077",
+  "builtin-baseline": "c63619856b89f0af4d77ba2049396039e4985418",
   "dependencies": [
-    "cppcoro",
     {
-      "name": "fmt",
-      "version>=": "10.2.1#1"
-    },
-    "glfw3",
-    {
-      "name": "imgui",
-      "features": [
-        "glfw-binding",
-        "opengl3-binding"
-      ]
+      "name": "catch2",
+      "version>=": "3.5.3"
     },
     {
       "name": "nanobind",
       "version>=": "2.2.0"
-    },
-    "opengl",
-    {
-      "name": "sfml",
-      "version>=": "2.5.1#14"
     }
   ],
   "features": {

@@ -22,10 +22,6 @@ if(USE_VCPKG_SUBMODULE)
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 endif()
 
-# Set font path
-set(USER_FONT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resources/open-sans/OpenSans-Regular.ttf)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/source/bitdoku_gui.cpp @ONLY)
-
 project(
     bitdoku
     VERSION 0.1.0
@@ -37,9 +33,6 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
-# ---- Add modules ----
-add_subdirectory(source/modules)
-
 # ---- Declare library ----
 
 add_library(
@@ -48,64 +41,20 @@ add_library(
 target_sources(
     bitdoku_lib
     PUBLIC
-		FILE_SET CXX_MODULES FILES
-		source/bitdoku.ixx
-    PRIVATE
-		source/bitdoku.cpp
-)
-target_include_directories(
-    bitdoku_lib ${warning_guard}
-    PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
-    "$<INSTALL_INTERFACE:include>"
+    FILE_SET cxx_modules TYPE CXX_MODULES FILES
+		${CMAKE_CURRENT_LIST_DIR}/src/bitdoku.ixx
 )
 target_compile_features(bitdoku_lib PRIVATE cxx_std_23)
-find_package(fmt REQUIRED)
-find_package(cppcoro REQUIRED)
-target_link_libraries(bitdoku_lib PRIVATE module_fmt cppcoro)
-
-add_library(
-    bitdoku_gui OBJECT
-    source/bitdoku_gui.cpp
-)
-target_include_directories(
-    bitdoku_gui ${warning_guard}
-    PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
-)
-target_compile_features(bitdoku_gui PRIVATE cxx_std_23)
-find_package(SFML COMPONENTS graphics window system REQUIRED)
-target_link_libraries(bitdoku_gui PUBLIC sfml-graphics sfml-window sfml-system bitdoku_lib) 
+#target_link_libraries(bitdoku_lib PRIVATE fmt::fmt)
 
 # ---- Declare executables ----
 
 # Console executable
-add_executable(bitdoku_exe source/main.cpp)
+add_executable(bitdoku_exe src/main.cpp)
 add_executable(bitdoku::exe ALIAS bitdoku_exe)
 set_property(TARGET bitdoku_exe PROPERTY OUTPUT_NAME bitdoku)
 target_compile_features(bitdoku_exe PRIVATE cxx_std_23)
-target_link_libraries(bitdoku_exe PRIVATE bitdoku_lib fmt::fmt)
-
-# GUI executable
-add_executable(bgui source/gui_exe.cpp)
-set_property(TARGET bgui PROPERTY OUTPUT_NAME gui)
-target_compile_features(bgui PRIVATE cxx_std_23)
-target_link_libraries(bgui PRIVATE bitdoku_gui bitdoku_lib)
-
-# imgui executable
-add_executable(imgui_exe source/igui.cpp)
-set_property(TARGET imgui_exe PROPERTY OUTPUT_NAME igui)
-target_compile_features(imgui_exe PRIVATE cxx_std_23)
-find_package(imgui REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(OpenGL REQUIRED)
-target_link_libraries(imgui_exe PRIVATE bitdoku_lib  imgui::imgui OpenGL::GL glfw module_std)
-
-add_custom_command(
-        TARGET bgui PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_CURRENT_LIST_DIR}/resources/open-sans/OpenSans-Regular.ttf
-                ${CMAKE_BINARY_DIR}/OpenSans-Regular.ttf)
+target_link_libraries(bitdoku_exe PRIVATE bitdoku_lib)
 
 # ---- Install rules ----
 
@@ -123,5 +72,4 @@ elseif(NOT PROJECT_IS_TOP_LEVEL)
       "Developer mode is intended for developers of bitdoku"
   )
 endif()
-
 include(cmake/dev-mode.cmake)
